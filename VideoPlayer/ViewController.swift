@@ -10,11 +10,11 @@ import UIKit
 import AVFoundation
 import AVKit
 
-class ViewController: UIViewController, UISearchBarDelegate {
+class ViewController: UIViewController {
     
     // MARK: Properties
 //    var backgroundView: UIView!
-//    var searchController: UISearchController!
+    var searchController: UISearchController!
 //    var playVideoView: UIView!
 //    var buttonView: UIView!
 //
@@ -27,28 +27,14 @@ class ViewController: UIViewController, UISearchBarDelegate {
     // MARK: Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
-        setUpAVPlayer()
+
 //        setUpbackgroundView()
 //        setUpPlayVideoView()
-//        setUpSearchBar()
+        setUpSearchBar()
 //        setUpButtonView()
     }
     
-    func setUpAVPlayer() {
-        
-        let urlString = URL(string: "http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8")
-        let player = AVPlayer(url: urlString!)
-        let playerController = AVPlayerViewController()
-        
-        playerController.player = player
-        self.addChildViewController(playerController)
-        self.view.addSubview(playerController.view)
-        playerController.view.frame = self.view.frame
-        
-        player.play()
-    }
+    
     
 //    deinit {
 //        playerItem.removeObserver(self, forKeyPath: "loadedTimeRanges")
@@ -76,32 +62,32 @@ class ViewController: UIViewController, UISearchBarDelegate {
 //        self.view.backgroundColor = UIColor(red: 8/255, green: 21/255, blue: 35/255, alpha: 1)
 //    }
 //
-//    func setUpSearchBar() {
-//
-//        searchController = UISearchController(searchResultsController: nil)
-//        searchController.searchBar.delegate = self
-//
-//        searchController.dimsBackgroundDuringPresentation = false
-//        searchController.searchBar.searchBarStyle = .prominent
+    func setUpSearchBar() {
+
+        searchController = UISearchController(searchResultsController: nil)
+        searchController.searchBar.delegate = self
+
+//        searchController.dimsBackgroundDuringPresentation = true
+//        searchController.searchBar.searchBarStyle = .default
 //        searchController.searchBar.sizeToFit()
-//        searchController.searchBar.placeholder = "Enter URL of video"
-//        setUpSearchBarBackgroundColor()
-//        self.backgroundView.addSubview(searchController.searchBar)
-//    }
-//
-//    func setUpSearchBarBackgroundColor() {
-//
-//        guard let UISearchBarBackground: AnyClass = NSClassFromString("UISearchBarBackground") else { return }
-//
-//        for view in searchController.searchBar.subviews {
-//            for subview in view.subviews {
-//                if subview.isKind(of: UISearchBarBackground) {
-//                    subview.alpha = 0
-//                }
-//            }
-//        }
-//    }
-//
+        searchController.searchBar.placeholder = "Enter URL of video"
+        setUpSearchBarBackgroundColor()
+        self.view.addSubview(searchController.searchBar)
+    }
+
+    func setUpSearchBarBackgroundColor() {
+
+        guard let UISearchBarBackground: AnyClass = NSClassFromString("UISearchBarBackground") else { return }
+
+        for view in searchController.searchBar.subviews {
+            for subview in view.subviews {
+                if subview.isKind(of: UISearchBarBackground) {
+                    subview.alpha = 0
+                }
+            }
+        }
+    }
+
 //    func setUpPlayVideoView() {
 //
 //        playVideoView = UIView()
@@ -202,12 +188,12 @@ class ViewController: UIViewController, UISearchBarDelegate {
 //    }
 }
 
-//extension ViewController: UISearchBarDelegate {
-//
-//    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-//         let urlString = searchBar.text ?? ""
-//        if let url = URL(string: urlString) {
-//
+extension ViewController: UISearchBarDelegate {
+
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+         let urlString = searchBar.text ?? ""
+        if let url = URL(string: urlString) {
+            print("323\(urlString)")
 //            self.avplayer = AVPlayer(url: url)
 //            self.playerController.player = self.avplayer
 //            self.playVideoView.addSubview(self.playerController.view)
@@ -215,8 +201,23 @@ class ViewController: UIViewController, UISearchBarDelegate {
 //            self.playerController.player?.play()
 //            avplayer.addObserver(self, forKeyPath: "loadedTimeRanges", options: NSKeyValueObservingOptions.new, context: nil)
 //            avplayer.addObserver(self, forKeyPath: "status", options: NSKeyValueObservingOptions.new, context: nil)
-//        }
-//    }
+            setUpAVPlayer(url: url)
+        }
+        
+    }
+
+    func setUpAVPlayer(url: URL) {
+        
+        let urlString = url
+        let player = AVPlayer(url: urlString)
+        let playerController = AVPlayerViewController()
+        
+        playerController.player = player
+        self.addChildViewController(playerController)
+        self.view.addSubview(playerController.view)
+        playerController.view.frame = self.view.frame
+        player.play()
+    }
 //    func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
 //        guard let playerItem = object as? AVPlayerItem else { return }
 //        if keyPath == "loadedTimeRanges"{
@@ -231,5 +232,5 @@ class ViewController: UIViewController, UISearchBarDelegate {
 //            }
 //        }
 //    }
-//}
+}
 
