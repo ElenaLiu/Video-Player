@@ -20,9 +20,9 @@ class ViewController: UIViewController {
 
 //    let playerController = AVPlayerViewController()
 //    var playerItem:AVPlayerItem!
-//    var avplayer:AVPlayer!
+    var player:AVPlayer!
 //    var playerLayer:AVPlayerLayer!
-//    var playing: Bool = true
+    var playing: Bool = true
     
     // MARK: Life Cycle
     override func viewDidLoad() {
@@ -125,26 +125,27 @@ class ViewController: UIViewController {
     func setUpPlayButton() -> UIButton {
         let playButton = UIButton()
 
+        playButton.isUserInteractionEnabled = true
         playButton.backgroundColor = .black
         playButton.setTitle("Play", for: .normal)
         playButton.translatesAutoresizingMaskIntoConstraints = false
         playButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
-//        playButton.addTarget(self, action: #selector(ViewController.playAndPause), for: .touchUpInside)
+        playButton.addTarget(self, action: #selector(playAndPause), for: .touchUpInside)
         return playButton
     }
-//    @objc func playAndPause() {
-//
-//        guard let avplayer = avplayer else { return }
-//        if playing == true{
-//            avplayer.pause()
-//            playing = false
-//            print("stop")
-//        }else{
-//            avplayer.play()
-//            playing = true
-//            print("play")
-//        }
-//    }
+    @objc func playAndPause() {
+
+        guard let avPlayer = player else { return }
+        if playing == true {
+            avPlayer.pause()
+            playing = false
+            print("stop")
+        }else {
+            avPlayer.play()
+            playing = true
+            print("play")
+        }
+    }
 
     func setUpMuteButton() -> UIButton {
         let MuteButton = UIButton()
@@ -170,7 +171,7 @@ extension ViewController: UISearchBarDelegate {
     func setUpAVPlayer(url: URL) {
         
         let urlString = url
-        let player = AVPlayer(url: urlString)
+        player = AVPlayer(url: urlString)
         let playerController = AVPlayerViewController()
         
         playerController.player = player
