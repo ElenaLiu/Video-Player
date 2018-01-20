@@ -23,6 +23,7 @@ class ViewController: UIViewController {
     var player:AVPlayer!
 //    var playerLayer:AVPlayerLayer!
     var playing: Bool = true
+
     
     // MARK: Life Cycle
     override func viewDidLoad() {
@@ -99,19 +100,19 @@ class ViewController: UIViewController {
         buttonView = UIView()
 
         let playButton = setUpPlayButton()
-        let MuteButton = setUpMuteButton()
+        let muteButton = setUpMuteButton()
 
         backgroundView.addSubview(buttonView)
         buttonView.addSubview(playButton)
-        buttonView.addSubview(MuteButton)
+        buttonView.addSubview(muteButton)
 
         playButton.leadingAnchor.constraint(equalTo: buttonView.leadingAnchor).isActive = true
         playButton.topAnchor.constraint(equalTo: buttonView.topAnchor).isActive = true
         playButton.bottomAnchor.constraint(equalTo: buttonView.bottomAnchor).isActive = true
 
-        MuteButton.trailingAnchor.constraint(equalTo: buttonView.trailingAnchor).isActive = true
-        MuteButton.topAnchor.constraint(equalTo: buttonView.topAnchor).isActive = true
-        MuteButton.bottomAnchor.constraint(equalTo: buttonView.bottomAnchor).isActive = true
+        muteButton.trailingAnchor.constraint(equalTo: buttonView.trailingAnchor).isActive = true
+        muteButton.topAnchor.constraint(equalTo: buttonView.topAnchor).isActive = true
+        muteButton.bottomAnchor.constraint(equalTo: buttonView.bottomAnchor).isActive = true
 
         buttonView.translatesAutoresizingMaskIntoConstraints = false
         buttonView.leadingAnchor.constraint(equalTo: backgroundView.leadingAnchor).isActive = true
@@ -148,16 +149,23 @@ class ViewController: UIViewController {
     }
 
     func setUpMuteButton() -> UIButton {
-        let MuteButton = UIButton()
+        let muteButton = UIButton()
 
-        MuteButton.backgroundColor = .black
-        MuteButton.setTitle("Mute", for: .normal)
-        MuteButton.translatesAutoresizingMaskIntoConstraints = false
-        MuteButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
-
-        return MuteButton
+        muteButton.backgroundColor = .black
+        muteButton.setTitle("Mute", for: .normal)
+        muteButton.translatesAutoresizingMaskIntoConstraints = false
+        muteButton.widthAnchor.constraint(equalToConstant: 80).isActive = true
+        muteButton.addTarget(self, action: #selector(muteAndUnmute), for: .touchUpInside)
+        return muteButton
+    }
+    
+    @objc func muteAndUnmute() {
+        guard let avplayer = player else { return }
+        
+        avplayer.isMuted = !avplayer.isMuted
     }
 }
+
 
 extension ViewController: UISearchBarDelegate {
 
