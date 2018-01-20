@@ -13,20 +13,15 @@ import AVKit
 class ViewController: UIViewController {
     
     // MARK: Properties
-    var backgroundView: UIView!
-    var searchController: UISearchController!
-    var playVideoView: UIView!
-    var buttonView: UIView!
+    var backgroundView: UIView = UIView()
+    var searchController: UISearchController = UISearchController(searchResultsController: nil)
+    var playVideoView: UIView = UIView()
+    var buttonView: UIView = UIView()
 
-//    let playerController = AVPlayerViewController()
-//    var playerItem:AVPlayerItem!
-    var player:AVPlayer!
-//    var playerLayer:AVPlayerLayer!
-    var playing: Bool = true
+    var player: AVPlayer!
     let playButton = UIButton()
     let muteButton = UIButton()
 
-    
     // MARK: Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,6 +30,10 @@ class ViewController: UIViewController {
         setUpPlayVideoView()
         setUpSearchBar()
         setUpButtonView()
+    }
+    
+    deinit {
+        player.removeObserver(self, forKeyPath: "rate")
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -47,7 +46,6 @@ class ViewController: UIViewController {
 
     func setUpbackgroundView() {
 
-        backgroundView = UIView()
         self.view.addSubview(backgroundView)
         backgroundView.translatesAutoresizingMaskIntoConstraints = false
         backgroundView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
@@ -60,12 +58,11 @@ class ViewController: UIViewController {
 
     func setUpSearchBar() {
 
-        searchController = UISearchController(searchResultsController: nil)
         searchController.searchBar.delegate = self
 
-//        searchController.dimsBackgroundDuringPresentation = true
-//        searchController.searchBar.searchBarStyle = .default
-//        searchController.searchBar.sizeToFit()
+        searchController.dimsBackgroundDuringPresentation = true
+        searchController.searchBar.searchBarStyle = .default
+        searchController.searchBar.sizeToFit()
         searchController.searchBar.placeholder = "Enter URL of video"
         setUpSearchBarBackgroundColor()
         self.backgroundView.addSubview(searchController.searchBar)
@@ -86,7 +83,6 @@ class ViewController: UIViewController {
 
     func setUpPlayVideoView() {
 
-        playVideoView = UIView()
         backgroundView.addSubview(playVideoView)
         playVideoView.translatesAutoresizingMaskIntoConstraints = false
         playVideoView.leadingAnchor.constraint(equalTo: backgroundView.leadingAnchor).isActive = true
@@ -98,8 +94,6 @@ class ViewController: UIViewController {
     }
 
     func setUpButtonView() {
-
-        buttonView = UIView()
 
         let playButton = setUpPlayButton()
         let muteButton = setUpMuteButton()
@@ -135,19 +129,14 @@ class ViewController: UIViewController {
         playButton.addTarget(self, action: #selector(playAndPause), for: .touchUpInside)
         return playButton
     }
+    
     @objc func playAndPause() {
         
         guard let avPlayer = player else { return }
-        if playing == true {
+        if avPlayer.rate > 0 {
             avPlayer.pause()
-            playing = false
-            playButton.setTitle("Pause", for: .normal)
-            print("stop")
         }else {
             avPlayer.play()
-            playing = true
-            playButton.setTitle("Play", for: .normal)
-            print("play")
         }
     }
 
@@ -162,8 +151,8 @@ class ViewController: UIViewController {
     }
     
     @objc func muteAndUnmute() {
-        guard let avplayer = player else { return }
         
+        guard let avplayer = player else { return }
         avplayer.isMuted = !avplayer.isMuted
         if avplayer.isMuted {
             muteButton.setTitle("Mute", for: .normal)
@@ -176,7 +165,8 @@ class ViewController: UIViewController {
 extension ViewController: UISearchBarDelegate {
 
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-         let urlString = searchBar.text ?? ""
+        
+        let urlString = searchBar.text ?? ""
         if let url = URL(string: urlString) {
             setUpAVPlayer(url: url)
         }
@@ -186,6 +176,9 @@ extension ViewController: UISearchBarDelegate {
         
         let urlString = url
         player = AVPlayer(url: urlString)
+        // Set up KVO
+        player.addObserver(self, forKeyPath: "rate", options: NSKeyValueObservingOptions.new, context: nil)
+
         let playerController = AVPlayerViewController()
         
         playerController.player = player
@@ -194,19 +187,18 @@ extension ViewController: UISearchBarDelegate {
         playerController.view.frame = self.playVideoView.frame
         player.play()
     }
-//    func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
-//        guard let playerItem = object as? AVPlayerItem else { return }
-//        if keyPath == "loadedTimeRanges"{
-//
-//        }else if keyPath == "status"{
-//
-//            if playerItem.status == AVPlayerItemStatus.readyToPlay{
-//
-//                self.avplayer.play()
-//            }else{
-//                print("加载异常")
-//            }
-//        }
-//    }
-}
+    
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        
+        if keyPath == "rate" {
+            if player.rate > 0 {
+                playButton.setTitle("Pause", for: .normal)
 
+                print("video started")
+            }else {
+                playButton.setTitle("Play", for: .normal)
+
+            }
+        }
+    }
+}
