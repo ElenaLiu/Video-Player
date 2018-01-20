@@ -23,6 +23,8 @@ class ViewController: UIViewController {
     var player:AVPlayer!
 //    var playerLayer:AVPlayerLayer!
     var playing: Bool = true
+    let playButton = UIButton()
+    let muteButton = UIButton()
 
     
     // MARK: Life Cycle
@@ -124,8 +126,7 @@ class ViewController: UIViewController {
     }
 
     func setUpPlayButton() -> UIButton {
-        let playButton = UIButton()
-
+        
         playButton.isUserInteractionEnabled = true
         playButton.backgroundColor = .black
         playButton.setTitle("Play", for: .normal)
@@ -135,21 +136,22 @@ class ViewController: UIViewController {
         return playButton
     }
     @objc func playAndPause() {
-
+        
         guard let avPlayer = player else { return }
         if playing == true {
             avPlayer.pause()
             playing = false
+            playButton.setTitle("Pause", for: .normal)
             print("stop")
         }else {
             avPlayer.play()
             playing = true
+            playButton.setTitle("Play", for: .normal)
             print("play")
         }
     }
 
     func setUpMuteButton() -> UIButton {
-        let muteButton = UIButton()
 
         muteButton.backgroundColor = .black
         muteButton.setTitle("Mute", for: .normal)
@@ -163,9 +165,13 @@ class ViewController: UIViewController {
         guard let avplayer = player else { return }
         
         avplayer.isMuted = !avplayer.isMuted
+        if avplayer.isMuted {
+            muteButton.setTitle("Mute", for: .normal)
+        } else {
+            muteButton.setTitle("UnMute", for: .normal)
+        }
     }
 }
-
 
 extension ViewController: UISearchBarDelegate {
 
